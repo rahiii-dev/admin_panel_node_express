@@ -1,0 +1,36 @@
+<div class="page-full bg-dark text-white">
+    <div class="content">
+
+        <% if(locals.errors && locals.errors.credError) {%>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= locals.errors.credError %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% } %>
+
+        <h1 class="text-center">Register</h1>
+
+        <form action="/login" method="post">
+            <div class="mb-3">
+                <label for="" class="form-label">Username</label>
+                
+                <input type="text" class="form-control" name="username" value="<%= locals.username || '' %>">
+
+                <% if(locals.errors && locals.errors.usernameError) {%>
+                    <p class="mt-2 text-danger"><%= locals.errors.usernameError || 'Please enter username' %></p>
+                <% } %>
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Password</label>
+                <input type="password" class="form-control" name="password">
+                <% if(locals.errors && locals.errors.passError) {%>
+                    <p class="mt-2 text-danger"><%= locals.errors.passError || 'Please enter password' %></p>
+                <% } %>
+            </div>
+            <div class="mb-3">
+                <p>Already a user ? <a href="/login" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Sign In</a></p>
+            </div>
+            <button type="submit" class="btn btn-light">Login</button>
+        </form>
+    </div>
+</div>
