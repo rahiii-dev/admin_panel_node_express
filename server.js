@@ -26,7 +26,7 @@ const loggerMiddleware = require('./middlewares/loggerMIddleware');
 const authMiddleware = require('./middlewares/authMiddleware');
 // Middleware Setup
 app.use(loggerMiddleware);
-app.use(authMiddleware);
+app.use(authMiddleware('/login', ['/login', '/register']));
 
 // import router
 const homeRouter = require('./routes/homeRouter');

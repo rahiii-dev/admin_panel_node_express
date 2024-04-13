@@ -1,17 +1,16 @@
 
-module.exports = (req, res, next) => {
-    const isAuthenticated = req.session.isAuthenticated ? true : false;
-
-    const isLoginPage = (req.url === '/login');
-    const isRegisterPage = (req.url === '/register');
-
-    if((isLoginPage && isAuthenticated || isRegisterPage && isAuthenticated)){
-        return res.redirect('/');
+module.exports = (redirectingUrl, excludedUrls) => {
+    return (req, res, next) => {
+        const isAuthenticated = req.session.isAuthenticated ? true : false;
+    
+        if(isAuthenticated && (excludedUrls.includes(req.url)) ){
+            return res.redirect(req.url);
+        }
+    
+        if (!isAuthenticated && (!excludedUrls.includes(req.url))) {
+            return res.redirect(redirectingUrl);
+        }
+    
+        next()
     }
-
-    if((!isLoginPage || !isRegisterPage) && !isAuthenticated){
-        return res.redirect('/login')
-    }
-
-    next()
 }
