@@ -21,12 +21,17 @@ app.use(session({
     saveUninitialized: false
 }))
 
+app.use(express.urlencoded({extended : true}))
+// app.use(express.json());
+
 // import middlewares
 const loggerMiddleware = require('./middlewares/loggerMIddleware');
 const authMiddleware = require('./middlewares/authMiddleware');
+const noCacheMiddleware = require('./middlewares/noCacheMiddleware')
 // Middleware Setup
 app.use(loggerMiddleware);
 app.use(authMiddleware('/login', ['/login', '/register']));
+app.use(['/login', '/register', '/logout', '/'], noCacheMiddleware);
 
 // import router
 const homeRouter = require('./routes/homeRouter');

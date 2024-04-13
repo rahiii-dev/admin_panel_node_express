@@ -1,16 +1,9 @@
 <div class="page-full bg-dark text-white">
     <div class="content">
 
-        <% if(locals.errors && locals.errors.credError) {%>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <%= locals.errors.credError %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <% } %>
-
         <h1 class="text-center">Register</h1>
 
-        <form action="/login" method="post">
+        <form action="/register" method="post">
             <div class="mb-3">
                 <label for="" class="form-label">Username</label>
                 
@@ -21,6 +14,15 @@
                 <% } %>
             </div>
             <div class="mb-3">
+                <label for="" class="form-label">Email</label>
+                
+                <input type="email" class="form-control" name="email" value="<%= locals.email || '' %>">
+
+                <% if(locals.errors && locals.errors.emailError) {%>
+                    <p class="mt-2 text-danger"><%= locals.errors.emailError || 'Please enter email' %></p>
+                <% } %>
+            </div>
+            <div class="mb-3">
                 <label for="" class="form-label">Password</label>
                 <input type="password" class="form-control" name="password">
                 <% if(locals.errors && locals.errors.passError) {%>
@@ -28,9 +30,16 @@
                 <% } %>
             </div>
             <div class="mb-3">
+                <label for="" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" name="Cpassword">
+                <% if(locals.errors && locals.errors.CpassError) {%>
+                    <p class="mt-2 text-danger"><%= locals.errors.CpassError || 'Please enter password' %></p>
+                <% } %>
+            </div>
+            <div class="mb-3">
                 <p>Already a user ? <a href="/login" class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Sign In</a></p>
             </div>
-            <button type="submit" class="btn btn-light">Login</button>
+            <button type="submit" class="btn btn-light">Sign Up</button>
         </form>
     </div>
 </div>

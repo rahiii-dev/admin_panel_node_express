@@ -1,3 +1,5 @@
 <div class="container-fluid">
-    <h1>Hello World</h1>
+    <h1>Hello <%= locals.user?.username%> </h1>
+    <h1>Role: <%= locals.user?.role%> </h1>
+    <a href="/logout">Logout</a>
 </div>
