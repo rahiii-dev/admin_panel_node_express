@@ -1,4 +1,5 @@
 const User = require("../model/userSchema");
+const bcrypt = require('bcrypt');
 
 module.exports = {
   /*  
@@ -48,11 +49,19 @@ module.exports = {
   },
 
   /*  
-        Route: POST /register
+        Route: POST [/register, /admin/user/add]
         Purpose: Create a new user
     */
   createUser: async (req, res) => {
         const {username, email, password, Cpassword} = req.body
+        let role = 'user';
+
+        const isAdmin = (req.session.user.role === 'admin');
+
+        if(isAdmin){
+            role = req.body.role;   
+        }
+
         const errors = {};
 
         try {
@@ -81,15 +90,25 @@ module.exports = {
             }
 
             if (Object.keys(errors).length > 0) {
-                return res.render("accounts/register", {title: "App | Register", errors: errors, username : username, email: email });
+                if(isAdmin){
+                    return res.render('admin/userAdd', {layout: 'layouts/adminLayout',title : "Dasboard | User | Add", errors, username, email})
+                }
+
+                return res.render("accounts/register", {title: "App | Register", errors, username, email });
             }
 
-            const newUser = new User({username, email, password});
+            const hashedPass = await bcrypt.hash(password, 10);
+            const newUser = new User({username, email, password : hashedPass, role});
             await newUser.save();
+            
+            if(isAdmin){
+                return res.render('admin/userAdd', {layout: 'layouts/adminLayout',title : "Dasboard | User | Add", succesMessage: 'User added succesfully.'})
+            }
+            
             req.session.isAuthenticated = true;
             req.session.user = newUser;
+            return res.redirect("/");
 
-            res.redirect("/");
         }catch(err){
             if(err.name === 'ValidationError'){
                 const errors = {}
@@ -105,6 +124,10 @@ module.exports = {
                     }
                 }
 
+                if(isAdmin){
+                    return res.render('admin/userAdd', {layout: 'layouts/adminLayout',title : "Dasboard | User | Add", errors: errors, username:username, email : email})
+                }
+
                 return res.render("accounts/register", {title: "App | Register", errors: errors, username:username, email : email});
             } else {
                 console.error("Error creating user:", err);
@@ -112,6 +135,76 @@ module.exports = {
             }
         }
   },
+  /*  
+        Route: PUT /admin/user/edit
+        Purpose: Update a user
+    */
+    updateUser : async (req, res) => {
+        const {username, email, role,  _id : userId} = req.body
+    
+        const errors = {};
+
+        try {
+            if (!username) {
+                errors.usernameError = "Please enter Username";
+            }
+            if (!email) {
+                errors.emailError = "Please enter an email";
+            }
+            
+            const usernameExist = await User.findOne({ username, _id: { $ne: userId } });
+            if (usernameExist) {
+                errors.usernameError = "Username already exist";
+            }
+            const emailExist = await User.findOne({ email, _id: { $ne: userId } });
+            if (emailExist) {
+                errors.emailError = "Email already exist";
+            }
+
+            if (Object.keys(errors).length > 0) {
+                return res.render('admin/userUpdate', {layout: 'layouts/adminLayout',title : "Dasboard | User | Edit", errors, user : req.body});
+            }
+
+            await User.findByIdAndUpdate(userId, {username, email, role});
+            const updatedUser = await User.findById(userId).select('-createdAt -updatedAt');
+            return res.render('admin/userUpdate', {layout: 'layouts/adminLayout',title : "Dasboard | User | Edit", succesMessage: 'User updated succesfully.', user: updatedUser});
+
+        }catch(err){
+            if(err.name === 'ValidationError'){
+                const errors = {}
+
+                for (field in err.errors) {
+                    console.log(err.errors[field])
+                    if(field === 'username'){
+                        errors.usernameError = err.errors[field].message;
+                    }
+
+                    if(field === 'email'){
+                        errors.emailError = err.errors[field].message;
+                    }
+                }
+
+                return res.render('admin/userUpdate', {layout: 'layouts/adminLayout',title : "Dasboard | User | Edit", errors, user : req.body});
+
+            } else {
+                console.error("Error creating user:", err);
+                res.status(500).send("Error creating user. Please try again later.");
+            }
+        }
+   },
+  /*  
+        Route: delete /admin/user/:userid/delete
+        Purpose: Deletes a user
+    */
+   deleteUser : async (req, res) => {
+        try{
+            await User.findOneAndDelete({_id : req.params.userid})
+            res.redirect('/admin/users');
+        } catch(err) {
+            console.error('Error deleting user:', err);
+            res.status(500).send('Error deleting user');
+        }
+   },
 
   /*  
         Route: GET /logout

@@ -1,0 +1,52 @@
+<div class="page-full">
+    <div class="content">
+
+        <% if(locals.succesMessage) {%>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= locals.succesMessage %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <h1 class="text-center">Update User</h1>
+
+        <form action="/admin/user/edit?_method=PUT" method="post">
+            <input type="hidden" name="_id" value="<%= user._id %>">
+            <div class="mb-3">
+                <label for="" class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" value="<%= locals.username || locals.user.username || '' %>">
+
+                <% if(locals.errors && locals.errors.usernameError) {%>
+                    <p class="mt-2 text-danger"><%= locals.errors.usernameError || 'Please enter username' %></p>
+                <% } %>
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Email</label>
+                
+                <input type="email" class="form-control" name="email" value="<%= locals.email || locals.user.email || '' %>">
+
+                <% if(locals.errors && locals.errors.emailError) {%>
+                    <p class="mt-2 text-danger"><%= locals.errors.emailError || 'Please enter email' %></p>
+                <% } %>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Role</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="role" id="userRole" value="user" <%= locals.user.role === 'user' ? 'checked' : '' %>>
+                  <label class="form-check-label" for="userRole">
+                    User
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="role" id="adminRole" value="admin" <%= locals.user.role === 'admin' ? 'checked' : '' %>>
+                  <label class="form-check-label" for="adminRole">
+                    Admin
+                  </label>
+                </div>
+              </div>              
+    
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>

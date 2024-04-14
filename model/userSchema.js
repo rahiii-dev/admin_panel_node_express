@@ -1,4 +1,5 @@
 const mongose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongose.Schema({
     username : {
@@ -38,22 +39,23 @@ const userSchema = new mongose.Schema({
 );
 
 // auttenticate
-userSchema.statics.authenticate = function(username, password){
-    return new Promise((resolve, reject) => {
-        this.findOne({username})
-            .then(user => {
-                if (!user) {
-                    reject({ usernameError: 'User not found' });
-                }
-                if (password !== user.password) {
-                    reject({ passError: 'Invalid Password' });
-                }
-                resolve(user);
-            })
-            .catch(err => {
-                reject(err);
-            });
-    });
+userSchema.statics.authenticate = async function(username, password) {
+    try {
+        const user = await this.findOne({ username });
+        if (!user) {
+            throw { usernameError: 'User not found' };
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+        if (match) {
+            return user;
+        } else {
+            throw { passError: 'Invalid Password' };
+        }
+    } catch (err) {
+        throw err;
+    }
 };
+
 
 module.exports = mongose.model('User', userSchema);

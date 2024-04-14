@@ -21,14 +21,16 @@ app.use(session({
     saveUninitialized: false
 }))
 
-app.use(express.urlencoded({extended : true}))
-// app.use(express.json());
+app.use(express.urlencoded({extended : true}));
 
 // import middlewares
+const methodOverride = require('./middlewares/methodOverrideMiddleware');
 const loggerMiddleware = require('./middlewares/loggerMIddleware');
 const authMiddleware = require('./middlewares/authMiddleware');
 const noCacheMiddleware = require('./middlewares/noCacheMiddleware')
+
 // Middleware Setup
+app.use(methodOverride('_method')); 
 app.use(loggerMiddleware);
 app.use(authMiddleware('/login', ['/login', '/register']));
 app.use(['/login', '/register', '/logout', '/'], noCacheMiddleware);
@@ -36,9 +38,11 @@ app.use(['/login', '/register', '/logout', '/'], noCacheMiddleware);
 // import router
 const homeRouter = require('./routes/homeRouter');
 const accountRouter = require('./routes/accountRouter');
+const adminRouter = require('./routes/adminRouter');
 // router Setup
 app.use('/', homeRouter);
 app.use('/', accountRouter);
+app.use('/', adminRouter);
 
 
 app.listen(serverConfig.port, serverConfig.host, () => {
