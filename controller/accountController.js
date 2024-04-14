@@ -55,8 +55,8 @@ module.exports = {
   createUser: async (req, res) => {
         const {username, email, password, Cpassword} = req.body
         let role = 'user';
-
-        const isAdmin = (req.session.user.role === 'admin');
+        
+        const isAdmin = (req.session.user?.role === 'admin');
 
         if(isAdmin){
             role = req.body.role;   
