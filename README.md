@@ -24,7 +24,7 @@ This web application is a User Management System designed to allow users to sign
 
 ## Installation
 
-1. Clone the repository: `git clone <repository-url>`
+1. Clone the repository: `git clone https://github.com/rahiii-dev/admin_panel_node_express.git`
 2. Install dependencies: `npm install`
 3. Set up environment variables (if needed).
 4. Start the server: `npm start`
