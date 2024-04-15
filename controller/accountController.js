@@ -52,7 +52,7 @@ module.exports = {
         Route: POST [/register, /admin/user/add]
         Purpose: Create a new user
     */
-  createUser: async (req, res) => {
+  createUser: async (req, res, next) => {
         const {username, email, password, Cpassword} = req.body
         let role = 'user';
         
@@ -131,7 +131,7 @@ module.exports = {
                 return res.render("accounts/register", {title: "App | Register", errors: errors, username:username, email : email});
             } else {
                 console.error("Error creating user:", err);
-                res.status(500).send("Error creating user. Please try again later.");
+                next(err);
             }
         }
   },
@@ -139,7 +139,7 @@ module.exports = {
         Route: PUT /admin/user/edit
         Purpose: Update a user
     */
-    updateUser : async (req, res) => {
+    updateUser : async (req, res, next) => {
         const {username, email, role,  _id : userId} = req.body
     
         const errors = {};
@@ -187,8 +187,8 @@ module.exports = {
                 return res.render('admin/userUpdate', {layout: 'layouts/adminLayout',title : "Dasboard | User | Edit", errors, user : req.body});
 
             } else {
-                console.error("Error creating user:", err);
-                res.status(500).send("Error creating user. Please try again later.");
+                console.error("Error updating user:", err);
+                next(err);
             }
         }
    },
@@ -196,13 +196,13 @@ module.exports = {
         Route: delete /admin/user/:userid/delete
         Purpose: Deletes a user
     */
-   deleteUser : async (req, res) => {
+   deleteUser : async (req, res, next) => {
         try{
             await User.findOneAndDelete({_id : req.params.userid})
             res.redirect('/admin/users');
         } catch(err) {
             console.error('Error deleting user:', err);
-            res.status(500).send('Error deleting user');
+            next(err);
         }
    },
 
@@ -210,11 +210,11 @@ module.exports = {
         Route: GET /logout
         Purpose: Logout a user
     */
-   logoutUser : (req, res) => {
+   logoutUser : (req, res, next) => {
     req.session.destroy(err => {
         if (err) {
             console.error('Error destroying session:', err);
-            return res.status(500).send('Error logging out. Please try again later.');
+            next(err)
         }
         
         res.redirect('/login');

@@ -44,9 +44,12 @@ app.use('/', homeRouter);
 app.use('/', accountRouter);
 app.use('/', adminRouter);
 
+// error handler
+const errorHandlerMiddleware = require('./middlewares/errorHandlerMiddleware');
+app.use(errorHandlerMiddleware);
 
 app.listen(serverConfig.port, serverConfig.host, () => {
-    console.log(`Server running on: http://localhost:${serverConfig.port}`)
+    console.log(`Server running on: http://${serverConfig.host}:${serverConfig.port}`)
 })
 
 // DB Connection

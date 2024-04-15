@@ -5,7 +5,7 @@ const accountController = require('../controller/accountController');
 
 // middleware
 router.use((req, res, next) => {
-    if(req.session.user.role === "user"){
+    if(req.session.user?.role !== "admin"){
         return res.redirect('/');
     }
 

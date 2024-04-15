@@ -12,7 +12,7 @@ module.exports = {
         Route: GET /admin/users
         Purpose: renderUserPage
     */
-    renderUserdPage : async (req, res) => {
+    renderUserdPage : async (req, res, next) => {
         try {
             let users = [];
             if(req.query.query){
@@ -32,7 +32,7 @@ module.exports = {
             res.render('admin/users', { layout: 'layouts/adminLayout', title: "Dashboard | Users", users: users });
         } catch (error) {
             console.error("Error fetching users:", error);
-            res.status(500).send("Error fetching users. Please try again later.");
+            next(err);
         }
     },
     /*  
@@ -46,13 +46,13 @@ module.exports = {
         Route: GET admin/user/edit
         Purpose: show user edit page for admin
     */
-    renderUserUpdatePage : async (req, res) => {
+    renderUserUpdatePage : async (req, res, next) => {
         try{
             const user = await User.findById(req.params.userid).select('-createdAt -updatedAt');
             res.render('admin/userUpdate', {layout: 'layouts/adminLayout',title : "Dasboard | User | Edit", user})
         }catch(err){
-            console.error("Error fetching users:", err);
-            res.status(500).send("Error fetching users. Please try again later.");
+            console.error("Error user update page:", err);
+            next(err);
         }
     },
 }

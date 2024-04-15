@@ -4,7 +4,7 @@ module.exports = {
         Purpose: Render the homepage
     */
     renderHomePage : (req, res) => {
-        if(req.session.user.role === "admin"){
+        if(req.session.user?.role === "admin"){
             return res.redirect('/admin/dashboard');
         }
 
